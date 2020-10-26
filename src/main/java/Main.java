@@ -12,8 +12,20 @@ public class Main {
         //Cuando queremos que el estado inicial sea aleatorio
         if(args.length==1){
             HashMap<Integer,Coordenadas> ciudades = Parser.parsearCiudades(args[0]);
-            Busqueda b = new Busqueda(ciudades);
-            b.buscar();
+
+            ArrayList<Integer> coste = new ArrayList<>(Arrays.asList(1,2,3,4,5,6,7,8,9,10));
+            ArrayList<Integer> iteracion = new ArrayList<>(Arrays.asList(1,2,3,4,5,6,7,8,9,10));
+            /*for(int i=0;i<10;i++){
+                Busqueda b = new Busqueda(ciudades);
+                ArrayList<Integer> aux = b.buscar();
+                coste.add(aux.get(0));
+                iteracion.add(aux.get(1));
+            }*/
+
+            System.out.println("RESULTADOS SIN MODIFICACIONES: ");
+            System.out.println("\t\tMedia\t\tDesviación");
+            System.out.println("Coste: \t" + media(coste) + "\t" + desviacionTipica(coste));
+            System.out.println("Iter.: \t" + media(iteracion) + "\t" + desviacionTipica(iteracion));
         }
         //cuando le pasamos nosotros el estado inicial.
         else if(args.length==2){
@@ -28,6 +40,26 @@ public class Main {
         else{
             System.out.println("Argument Error! : java -jar <fichero_distancias> [fichero_aleatorios]\n\n");
         }
+    }
+
+    private static double media(ArrayList<Integer> valores){
+        double sum=0.0;
+        for(int i=0;i<valores.size();i++){
+            sum += valores.get(i);
+        }
+        return(sum/valores.size());
+    }
+
+    private static double desviacionTipica(ArrayList<Integer> nums){
+
+        double media = media(nums);
+        double s=0;
+
+        for(int e: nums){
+            s += (e-media)*(e-media);
+        }
+
+        return(Math.sqrt(s/(nums.size()*1.0)));
     }
 }
 

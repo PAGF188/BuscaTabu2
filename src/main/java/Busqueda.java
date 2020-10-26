@@ -52,7 +52,9 @@ public class Busqueda {
         iteracionMejor=0;
     }
 
-    public void buscar(){
+    public ArrayList<Integer> buscar(){
+
+        ArrayList<Integer> devolver = new ArrayList<>();
 
         int IteraccionesSinMejora = 0;
 
@@ -106,6 +108,10 @@ public class Busqueda {
         imprimeRecorrido(mejor);
         System.out.println("\tCOSTE (km): " + costeRecorrido(mejor));
         System.out.println("\tITERACION: " + iteracionMejor);
+
+        devolver.add(costeRecorrido(mejor));
+        devolver.add(iteracionMejor);
+        return(devolver);
 
     }
 
