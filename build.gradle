@@ -1,0 +1,27 @@
+plugins {
+    id 'java'
+}
+
+group 'ENCO'
+version '1.0'
+
+sourceCompatibility = 1.8
+
+task busqueda(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'BuscaTabu',
+                'Main-Class': 'Main',
+                'Implementation-Version': version
+    }
+    baseName = 'BuscaTabu2'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
