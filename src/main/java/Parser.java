@@ -12,6 +12,7 @@ import java.util.HashMap;
 
 public class Parser {
 
+
     /**
      * Para parsear el archivo de ciudades con sus coordenadas
      * @param path, ruta al archivo
@@ -58,9 +59,10 @@ public class Parser {
     /**
      * Función para parsear el archivo de aleatorios
      * @param path, ruta al archivo
+     * @param MAX, numero de elementos a leer.
      * @return, estado inicial. vector de enteros con ciudades no repetidas 1-99
      */
-    public static ArrayList<Integer> parsearAleatorios(String path){
+    public static ArrayList<Integer> parsearAleatorios(String path, int MAX){
         File archivo = null;
         FileReader fr = null;
         BufferedReader br = null;
@@ -70,14 +72,14 @@ public class Parser {
             br = new BufferedReader(fr);
 
             String linea;
-            ArrayList<Integer> estadoInicial = new ArrayList<>(100);
+            ArrayList<Integer> estadoInicial = new ArrayList<>(MAX);
             while ((linea = br.readLine()) != null) {
-                int valor = 1 + (int)(Double.parseDouble(linea) * 99);
+                int valor = 1 + (int)(Double.parseDouble(linea) * (MAX-1));
                 if(estadoInicial.contains(valor)){
                     do {
-                        valor = (valor+1)%99;
+                        valor = (valor+1)%(MAX-1);
                         if(valor==0)
-                            valor=99;
+                            valor=(MAX-1);
                     }while(estadoInicial.contains(valor));
                 }
                 estadoInicial.add(valor);
