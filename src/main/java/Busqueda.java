@@ -8,7 +8,7 @@ import java.util.HashMap;
  *
  */
 public class Busqueda {
-    private final int MAX = 100;
+    private final int MAX = 100;  //maximo iteraciones sin mejora
     private HashMap<Integer,Coordenadas> costes;
     private ArrayList<Integer> mejor;     //mejor solucion
     private int iteracionMejor;
@@ -19,22 +19,6 @@ public class Busqueda {
     private int iteracciones;
     private int reinicios;
 
-    /**
-     * Para iniciar la búsqueda en una solucion dada.
-     * @param costes, Para cada ciudad sus posicion en coordenadas (radianes)
-     * @param estadoInicial, estado de partida, solucion inicial.
-     */
-    public Busqueda(HashMap<Integer, Coordenadas> costes, ArrayList<Integer> estadoInicial) {
-        this.costes = costes;
-        this.estado = estadoInicial;
-        mejor = (ArrayList<Integer>) estado.clone();
-        listaTabu = new ListaTabu();
-        i_intercambiada=-1;
-        j_intercambiada=-1;
-        iteracciones=1;
-        reinicios=0;
-        iteracionMejor=0;
-    }
 
     /**
      * Para iniciar la búsqueda con estado inicial aleatorio.
@@ -42,8 +26,16 @@ public class Busqueda {
      */
     public Busqueda(HashMap<Integer, Coordenadas> costes) {
         this.costes = costes;
-        estado = this.generaEstadoAleatorio();
+        estado = this.solucionGreedy();
         mejor = (ArrayList<Integer>) estado.clone();
+
+        /**borrar
+         *
+         */
+        System.out.println(estado);
+        System.out.println("Coste: " + costeRecorrido(estado));
+        //aqui
+
         listaTabu = new ListaTabu();
         i_intercambiada=-1;
         j_intercambiada=-1;
@@ -58,13 +50,14 @@ public class Busqueda {
 
         int IteraccionesSinMejora = 0;
 
-        System.out.println("RECORRIDO INICIAL");
-        imprimeRecorrido(estado);
-        System.out.println("\tCOSTE (km): " + costeRecorrido(estado));
-        System.out.println();
-
         //Iniciamos la búsqueda.  10001
         while(iteracciones!=10001){
+            /**
+             * esto solo está para informar cuanto falta
+             */
+            if(iteracciones%500==0){
+                System.out.println("Vamos en: " + iteracciones);
+            }
 
             //Reinicio
             if(IteraccionesSinMejora==MAX){
@@ -72,21 +65,12 @@ public class Busqueda {
                 estado = (ArrayList<Integer>) mejor.clone();
                 reinicios++;
                 IteraccionesSinMejora = 0;
-                System.out.println("***************\n" +
-                        "REINICIO: "+ reinicios +"\n" +
-                        "***************\n");
             }
-
-            System.out.println("ITERACION: " + iteracciones);
 
             //Nuevo estado pasa a ser el mejor de los vecinos.
             estado = exploraContorna(estado);
             //añadimos el intercambio realizado.
             listaTabu.addProhibicion(i_intercambiada,j_intercambiada);
-
-            System.out.println("\tINTERCAMBIO: (" + i_intercambiada + ", " + j_intercambiada + ")");
-            imprimeRecorrido(estado);
-            System.out.println("\tCOSTE (km): " + costeRecorrido(estado));
 
             if(costeRecorrido(estado) < costeRecorrido(mejor)){
                 mejor = (ArrayList<Integer>) estado.clone();
@@ -96,18 +80,8 @@ public class Busqueda {
             else{
                 IteraccionesSinMejora++;
             }
-
-            System.out.println("\tITERACIONES SIN MEJORA: " + IteraccionesSinMejora);
-            System.out.println("\tLISTA TABU:");
-            listaTabu.imprime();
-            System.out.println();
             iteracciones++;
         }
-
-        System.out.println("\nMEJOR SOLUCION:");
-        imprimeRecorrido(mejor);
-        System.out.println("\tCOSTE (km): " + costeRecorrido(mejor));
-        System.out.println("\tITERACION: " + iteracionMejor);
 
         devolver.add(costeRecorrido(mejor));
         devolver.add(iteracionMejor);
@@ -153,20 +127,41 @@ public class Busqueda {
      * generar estado inicial aleatorio.
      * @return array de enteros con la configuración inicial
      */
-    private ArrayList<Integer> generaEstadoAleatorio(){
-        ArrayList<Integer> si = new ArrayList<>();
-        for(int i=0; i<costes.size()-1; i++){
-            int valor = 1 + (int)(Math.random() * 99);
-            if(si.contains(valor)) {
-                do {
-                    valor = (valor + 1) % 99;
-                    if (valor == 0)
-                        valor = 99;
-                } while (si.contains(valor));
-            }
-            si.add(valor);
+    private ArrayList<Integer> solucionGreedy(){
+
+        ArrayList<Integer> aux = new ArrayList<>();  //array a devolver
+        ArrayList<Integer> ciudadesPorAsignar = new ArrayList<>();   //vamos leyendo de aqui las ciudades
+        //inicializamos ciudadesPorAsignar
+        for(int i=1;i<costes.size();i++){
+            ciudadesPorAsignar.add(i);
         }
-        return(si);
+
+
+        //partimos siempre de una ciudad, en la 1 iteración la 0
+        int ciudad=0;
+        double costeActual = 100000000;  //para que se mejora la 1 vez
+        double costeI;  //coste de 1 iteracion
+
+        //tantas veces como ciudades (hasta rellenar aux)
+        for(int i=0;i<costes.size()-1;i++){
+            int ciudadVecina=-1;
+            //miramos el coste de la ciudad actual con el resto de ciudades
+            for(int j: ciudadesPorAsignar){
+                 costeI= costes.get(ciudad).distancia(costes.get(j));
+                if(ciudadVecina==-1 || costeI < costeActual){
+                    ciudadVecina = j;
+                    costeActual = costeI;
+                }
+            }
+
+            //al finalizar la exploración de todas las ciudades
+            //añadimos ciudad vecina a aux y la eliminamos de ciudadesPorAsignar
+            aux.add(ciudadVecina);
+            final int borrar = ciudadVecina;
+            ciudadesPorAsignar.removeIf(x -> x == borrar);
+            ciudad = ciudadVecina;
+        }
+        return(aux);
     }
 
     /**
