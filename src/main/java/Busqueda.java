@@ -22,7 +22,10 @@ public class Busqueda {
     //para reinicialización con matriz frecs
     private double DMAX;
     private double DMIN;
-    private int[][] frecs;
+    private int[][] frecs = null;
+    private final double mu = 1;  //hiperparámetro de penalización ciudades consecutivas.
+
+    //para alternancia estratégica.
 
 
     /**
@@ -86,12 +89,26 @@ public class Busqueda {
                 System.out.println("Vamos en: " + iteracciones);
             }
 
-            //Reinicio
-            if(IteraccionesSinMejora==MAX){
+            /**
+             * REINICIO!!!!!!
+             *   - oscilación estratégica.
+             */
+            if(IteraccionesSinMejora%MAX==0){
+                //reinicio por intensificación
+                if(IteraccionesSinMejora==MAX){
+                    estado = (ArrayList<Integer>) mejor.clone();
+                }
+                //reinicio por diversificación. Ponemos Iteracciones Sin Mejora a 0.
+                else{
+                    estado = this.solucionGreedy();
+
+                }
+                System.out.println("REINICIO tipo: \n");
                 listaTabu.reiniciarTabla();
-                estado = (ArrayList<Integer>) mejor.clone();
                 reinicios++;
-                IteraccionesSinMejora = 0;
+                System.out.println("Nuevo estado inicial: ");
+                imprimeRecorrido(estado);
+                System.out.println("\tCOSTE: " + costeRecorrido(estado));
             }
 
             //Nuevo estado pasa a ser el mejor de los vecinos.
@@ -108,9 +125,6 @@ public class Busqueda {
                 IteraccionesSinMejora++;
             }
             iteracciones++;
-
-            System.out.println("\n");
-            imprimeRecorrido(estado);
 
             /**
              * Al finalizar la iteración, ajustamos los valores de la matriz freecs
@@ -173,6 +187,7 @@ public class Busqueda {
 
     /**
      * generar estado inicial aleatorio.
+     * En esta versión 3 además tiene en cuenta la matriz de pesos frecs y se usa en la reinicialización
      * @return array de enteros con la configuración inicial
      */
     private ArrayList<Integer> solucionGreedy(){
@@ -188,14 +203,15 @@ public class Busqueda {
         //partimos siempre de una ciudad, en la 1 iteración la 0
         int ciudad=0;
         double costeActual = 100000000;  //para que se mejora la 1 vez
-        double costeI;  //coste de 1 iteracion
+        double costeI;  //coste de iteracion
 
         //tantas veces como ciudades (hasta rellenar aux)
         for(int i=0;i<costes.size()-1;i++){
             int ciudadVecina=-1;
-            //miramos el coste de la ciudad actual con el resto de ciudades
+            //miramos el coste de la ciudad actual con el resto de ciudades. AÑADIMOS FACTOR DE PENALIZACIÓN
             for(int j: ciudadesPorAsignar){
-                 costeI= costes.get(ciudad).distancia(costes.get(j));
+                 costeI= costes.get(ciudad).distancia(costes.get(j)) +
+                         this.factorPenalizacion(ciudad,j);
                 if(ciudadVecina==-1 || costeI < costeActual){
                     ciudadVecina = j;
                     costeActual = costeI;
@@ -239,6 +255,24 @@ public class Busqueda {
             System.out.print(x + " ");
         }
         System.out.println();
+    }
+
+    private double factorPenalizacion(int i, int j){
+        if(frecs==null){
+            return(0);
+        }
+        double maximaFrecuencia=-1.0;
+        //calculamos máxia frecuencia de frecs
+        for(int a=0;a<costes.size();a++) {
+            for (int b = 0; b < costes.size(); b++) {
+                if(a!=b && a>b) {  //por ser matriz simétrica
+                    if (frecs[a][b] > maximaFrecuencia) {
+                        maximaFrecuencia = frecs[a][b];
+                    }
+                }
+            }
+        }
+        return(mu * (DMAX-DMIN) * ((double)frecs[i][j]/maximaFrecuencia));
     }
 
 }
