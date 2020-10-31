@@ -19,6 +19,11 @@ public class Busqueda {
     private int iteracciones;
     private int reinicios;
 
+    //para reinicialización con matriz frecs
+    private double DMAX;
+    private double DMIN;
+    private int[][] frecs;
+
 
     /**
      * Para iniciar la búsqueda con estado inicial aleatorio.
@@ -26,16 +31,14 @@ public class Busqueda {
      */
     public Busqueda(HashMap<Integer, Coordenadas> costes) {
         this.costes = costes;
-        estado = this.solucionGreedy();
+        estado = this.solucionGreedy();   //la solución greedy no se refleja sobre la matriz frecs
         mejor = (ArrayList<Integer>) estado.clone();
 
-        /**borrar
-         *
-         */
+        //borrar
         System.out.println("Partiendo estrategia avara: ");
         System.out.println(estado);
         System.out.println("Coste: " + costeRecorrido(estado) + "\n\n");
-        //aqui
+        //hasta aquí
 
         listaTabu = new ListaTabu();
         i_intercambiada=-1;
@@ -43,6 +46,29 @@ public class Busqueda {
         iteracciones=1;
         reinicios=1;
         iteracionMejor=0;
+
+        //Inicializamos Dmax y Dmin.
+        DMAX = -1;
+        DMIN = 100000000;
+        double coste_aux;
+        for(int i=0; i<costes.size();i++){
+            for(int j=0;j<costes.size();j++){
+                if(i!=j && i>j) {
+                    coste_aux = costes.get(i).distancia(costes.get(j));
+                    if (coste_aux < DMIN) {
+                        DMIN = coste_aux;
+                    }
+                    if (coste_aux > DMAX) {
+                        DMAX = coste_aux;
+                    }
+                }
+            }
+        }
+        System.out.println("Coste maximo: " + DMAX);
+        System.out.println("Coste mínimo: " +DMIN);
+
+        //creamos la matriz freecs
+        frecs = new int[costes.size()][costes.size()];
     }
 
     public ArrayList<Integer> buscar(){
@@ -82,6 +108,20 @@ public class Busqueda {
                 IteraccionesSinMejora++;
             }
             iteracciones++;
+
+            System.out.println("\n");
+            imprimeRecorrido(estado);
+
+            /**
+             * Al finalizar la iteración, ajustamos los valores de la matriz freecs
+             * Recorremos la solución actual e incrementamos en 1 la casilla i j de la matriz
+             */
+            frecs[0][estado.get(0)] += 1;
+            frecs[estado.get(0)][0] += 1;
+            for(int i=0, j=1; i<estado.size()-1; i++,j++){
+                frecs[estado.get(i)][estado.get(j)] += 1;
+                frecs[estado.get(j)][estado.get(i)] += 1;
+            }
         }
 
 
@@ -202,3 +242,14 @@ public class Busqueda {
     }
 
 }
+
+
+
+//impresión matriz
+/*for(int i=0;i<costes.size();i++){
+    for(int j=0;j<costes.size();j++){
+        System.out.print(frecs[i][j] + " ");
+     }
+     System.out.println();
+ }
+ System.out.println("\n\n\n\n");*/
