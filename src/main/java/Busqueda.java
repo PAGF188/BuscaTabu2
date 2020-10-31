@@ -32,8 +32,9 @@ public class Busqueda {
         /**borrar
          *
          */
+        System.out.println("Partiendo estrategia avara: ");
         System.out.println(estado);
-        System.out.println("Coste: " + costeRecorrido(estado));
+        System.out.println("Coste: " + costeRecorrido(estado) + "\n\n");
         //aqui
 
         listaTabu = new ListaTabu();
@@ -82,6 +83,13 @@ public class Busqueda {
             }
             iteracciones++;
         }
+
+
+        System.out.println("\nMEJOR SOLUCION:");
+        imprimeRecorrido(mejor);
+        System.out.println("\tCOSTE (km): " + costeRecorrido(mejor));
+        System.out.println("\tITERACION: " + iteracionMejor + "\n\n\n");
+
 
         devolver.add(costeRecorrido(mejor));
         devolver.add(iteracionMejor);

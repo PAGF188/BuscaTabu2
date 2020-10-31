@@ -38,7 +38,7 @@ public class Main {
         HashMap<Integer,Coordenadas> ciudades = Parser.parsearCiudades(args[0]);
         Busqueda b = new Busqueda(ciudades);
         ArrayList<Integer> aux = b.buscar();
-        System.out.println("RESULTADOS CON MODIFICACIONES: ");
+        System.out.println("RESULTADOS CON MODIFICACIONES greedy: ");
         System.out.println("Coste: \t" + aux.get(0));
         System.out.println("Iter.: \t" + aux.get(1));
     }
