@@ -137,7 +137,7 @@ public class Busqueda {
      */
     private ArrayList<Integer> solucionGreedy(){
 
-        ArrayList<Integer> aux = new ArrayList<>();  //array a devolver
+        ArrayList<Integer> aux = new ArrayList<>();  //array a devolverr
         ArrayList<Integer> ciudadesPorAsignar = new ArrayList<>();   //vamos leyendo de aqui las ciudades
         //inicializamos ciudadesPorAsignar
         for(int i=1;i<costes.size();i++){
