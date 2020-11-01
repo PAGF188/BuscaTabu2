@@ -95,7 +95,7 @@ public class Busqueda {
              */
             if(IteraccionesSinMejora%MAX==0){
                 //reinicio por intensificación
-                if(IteraccionesSinMejora==MAX || IteraccionesSinMejora==2*MAX || IteraccionesSinMejora==3*MAX){  //probamos con margen de error
+                if(IteraccionesSinMejora==MAX){
                     estado = (ArrayList<Integer>) mejor.clone();
                 }
                 //reinicio por diversificación. Ponemos Iteracciones Sin Mejora a 0.
