@@ -93,7 +93,7 @@ public class Busqueda {
              * REINICIO!!!!!!
              *   - oscilación estratégica.
              */
-            if(IteraccionesSinMejora%MAX==0){
+            if(IteraccionesSinMejora!=0 && IteraccionesSinMejora%MAX==0){
                 //reinicio por intensificación
                 if(IteraccionesSinMejora==MAX){
                     estado = (ArrayList<Integer>) mejor.clone();
