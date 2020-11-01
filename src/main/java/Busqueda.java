@@ -23,7 +23,7 @@ public class Busqueda {
     private double DMAX;
     private double DMIN;
     private int[][] frecs = null;
-    private final double mu = 1;  //hiperparámetro de penalización ciudades consecutivas.
+    private final double mu = 0.5;  //hiperparámetro de penalización ciudades consecutivas.
 
     //para alternancia estratégica.
 
@@ -95,6 +95,7 @@ public class Busqueda {
              */
             if(IteraccionesSinMejora!=0 && IteraccionesSinMejora%MAX==0){
                 //reinicio por intensificación
+
                 if(IteraccionesSinMejora==MAX){
                     estado = (ArrayList<Integer>) mejor.clone();
                 }
